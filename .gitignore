@@ -1,0 +1,118 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio temporary files, build results, and
+# user-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+
+# Rider project files
+.idea/
+*.sln.iml
+*wpftmp.csproj
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# NuGet
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary to ignore directories created by restore
+#**/packages/repositories.config
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Build results
+*.dll
+*.exe
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.nupkg
+*.symbols.nupkg
+*.appinstaller
+
+# Publish output
+publish/
+*.publishsettings
+
+# Temporary files
+tmp*
+~*
+*.tmp
+*.temp
+*.log
+
+# Rider and ReSharper
+_ReSharper*/
+*.ReSharper*
+*.DotSettings.user
+
+# Visual Studio cache files
+*.cache
+*.vs/**/*
+
+# Xamarin
+*.apk
+*.ap_
+*.xap
+*.xcuserstate
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# MSBuild
+*.builds
+*.projuser
+*.projitems
+*.userprefs
+
+# package management
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Mono auto generated files
+mono_crash.*
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Windows shortcuts
+*.lnk
+
+# Node modules (if any tooling uses node)
+node_modules/
+
+# Local NuGet cache
+*.nuget.props
+*.nuget.targets
+
+# Rider caches
+.idea/
+*.sublime-workspace
+*.sublime-project

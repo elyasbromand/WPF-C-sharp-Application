@@ -1,0 +1,388 @@
+﻿<Window x:Class="WPFZooApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFZooApplication"
+        mc:Ignorable="d"
+        Title="Zoo Manager"
+        Height="780" Width="920"
+        MinHeight="620" MinWidth="860"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI"
+        UseLayoutRounding="True">
+
+    <Window.Resources>
+
+        <!-- ===================== PALETTE ===================== -->
+        <SolidColorBrush x:Key="PaperBrush"      Color="#FFF6EFDD"/>
+        <SolidColorBrush x:Key="CardFaceBrush"    Color="#FFFDFBF5"/>
+        <SolidColorBrush x:Key="CharcoalBrush"    Color="#FF2B2B28"/>
+        <SolidColorBrush x:Key="GoldAccentBrush"  Color="#FFD9B65B"/>
+        <SolidColorBrush x:Key="SelectionBrush"   Color="#FFD8D4C8"/>
+        <SolidColorBrush x:Key="HoverItemBrush"   Color="#FFEEE8D6"/>
+        <SolidColorBrush x:Key="InsetFieldBrush"  Color="#FFEFE8DA"/>
+
+        <!-- ===================== SKETCHY 3D CARD (GroupBox) ===================== -->
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Grid>
+                            <!-- back layer: gives the "protruding down/right" 3D extrusion -->
+                            <Border Background="{StaticResource GoldAccentBrush}"
+                                    BorderBrush="{StaticResource CharcoalBrush}"
+                                    BorderThickness="3"
+                                    CornerRadius="6,12,8,10"
+                                    Margin="8,8,0,0"/>
+                            <!-- front layer: the actual card face -->
+                            <Border Background="{StaticResource CardFaceBrush}"
+                                    BorderBrush="{StaticResource CharcoalBrush}"
+                                    BorderThickness="3"
+                                    CornerRadius="10,5,12,6"
+                                    Margin="0,0,8,8">
+                                <Grid Margin="12,8,12,10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0"
+                                               Text="{TemplateBinding Header}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource CharcoalBrush}"
+                                               Margin="0,0,0,8"/>
+                                    <ContentPresenter Grid.Row="1"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== PRESSABLE 3D BUTTON ===================== -->
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <!-- shadow block behind the face -->
+                            <Border x:Name="ShadowLayer"
+                                    Background="{StaticResource GoldAccentBrush}"
+                                    BorderBrush="{StaticResource CharcoalBrush}"
+                                    BorderThickness="2.5"
+                                    CornerRadius="5,9,6,8"
+                                    Margin="6,6,0,0"/>
+                            <!-- the face the user actually presses -->
+                            <Border x:Name="FaceLayer"
+                                    Background="#FFFDFBF5"
+                                    BorderBrush="{StaticResource CharcoalBrush}"
+                                    BorderThickness="2.5"
+                                    CornerRadius="8,4,9,5"
+                                    Margin="0,0,6,6">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="FaceShift" X="0" Y="0"/>
+                                </Border.RenderTransform>
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="10,2"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="X" To="3" Duration="0:0:0.08"/>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="Y" To="3" Duration="0:0:0.08"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.08"/>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.08"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="X" To="6" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="Y" To="6" Duration="0:0:0.05"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="X" To="3" Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="FaceShift" Storyboard.TargetProperty="Y" To="3" Duration="0:0:0.05"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="FaceLayer" Property="Opacity" Value="0.5"/>
+                                <Setter TargetName="ShadowLayer" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== LIST ITEM (selection = dry-marker block) ===================== -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="ItemBg"
+                                Background="Transparent"
+                                CornerRadius="3,7,3,7"
+                                Margin="3,2"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBg" Property="Background" Value="{StaticResource HoverItemBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBg" Property="Background" Value="{StaticResource SelectionBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== LIST BOX (inset sketchy frame) ===================== -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="{StaticResource CardFaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4,9,5,8">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== TEXT BOX (rounded inset look) ===================== -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#FFFDFBF5"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource CharcoalBrush}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ===================== PLACEHOLDER TEXT OVERLAY (plain TextBlock, never blurry) -->
+        <Style x:Key="PlaceholderOverlayStyle" TargetType="TextBlock">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#FF9A9484"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="18,0,0,0"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Text, ElementName=TxtInput}" Value="">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ===================== LAYOUT ===================== -->
+    <Grid Margin="12" Background="{StaticResource PaperBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="4*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Dashboard header row ===== -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="4,0,4,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Height="2" Background="{StaticResource CharcoalBrush}"
+                    Opacity="0.45" VerticalAlignment="Center" Margin="10,0,16,0"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="🐾" FontSize="22" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBlock Text="Zoo Management Dashboard"
+                           FontSize="24" FontWeight="Bold"
+                           FontFamily="Segoe UI Black, Segoe UI"
+                           Foreground="{StaticResource CharcoalBrush}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Border Grid.Column="2" Height="2" Background="{StaticResource CharcoalBrush}"
+                    Opacity="0.45" VerticalAlignment="Center" Margin="16,0,160,0"/>
+
+            <Button Grid.Column="2" Click="AddAnimal_Click"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Width="150" Height="42">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="➕" FontSize="14" Margin="0,0,8,0"/>
+                    <TextBlock Text="Add Animal"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- ===== Zoo List card ===== -->
+        <GroupBox Grid.Row="1" Grid.Column="0" Header="🏛 Zoo List">
+            <ListBox x:Name="ListZoos"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                     SelectionChanged="ListZoos_SelectionChanged"/>
+        </GroupBox>
+
+        <!-- ===== Associated Animal List card ===== -->
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="🐾 Associated Animal List">
+            <ListBox x:Name="ListAssocAnimals"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                     SelectionChanged="ListAssocAnimals_SelectionChanged"/>
+        </GroupBox>
+
+        <!-- ===== All Animals card ===== -->
+        <GroupBox Grid.Row="1" Grid.Column="2" Header="🐻 All Animals">
+            <ListBox x:Name="ListAnimals"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                     SelectionChanged="ListAnimals_SelectionChanged"/>
+        </GroupBox>
+
+        <!-- ===== Actions card ===== -->
+        <GroupBox Grid.Row="2" Grid.ColumnSpan="3" Header="⚙ Actions">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,12">
+                    <Border Background="#FFFDFBF5"
+                            BorderBrush="{StaticResource CharcoalBrush}"
+                            BorderThickness="2"
+                            CornerRadius="14"
+                            Height="40">
+                        <TextBox x:Name="TxtInput"
+                                 Height="40"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="12,7"
+                                 FontSize="14"
+                                 FontFamily="Segoe UI Semibold"
+                                 FontWeight="SemiBold"
+                                 Foreground="{StaticResource CharcoalBrush}"
+                                 VerticalContentAlignment="Center"
+                                 Text=""/>
+                    </Border>
+                    <TextBlock Text="Enter name here..."
+                               Style="{StaticResource PlaceholderOverlayStyle}"/>
+                </Grid>
+
+                <Button Grid.Row="1" Grid.Column="0" Click="DeleteZoo_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🗑" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Delete Zoo" Foreground="#FFB23B3B"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="1" Click="RemoveAnimal_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="✂" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Remove Animal" Foreground="#FFB8742A"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="2" Click="DeleteAnimal_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🗑" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Delete Animal" Foreground="#FFB23B3B"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Row="2" Grid.Column="0" Click="AddZoo_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="➕" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Add Zoo" Foreground="#FF3E8E4F"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="2" Grid.Column="1" Click="AddToAnimalOfTheZoo_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🔗" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Add To Animals" Foreground="#FF7B4FA0"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Row="3" Grid.Column="0" Click="UpdateZoo_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="✏" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Update Zoo" Foreground="#FF2B4A6B"/>
+                    </StackPanel>
+                </Button>
+                <Button Grid.Row="3" Grid.Column="1" Click="UpdateAnimal_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="✏" FontSize="15" Margin="0,0,8,0"/>
+                        <TextBlock Text="Update Animal" Foreground="#FF2B4A6B"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</Window>
